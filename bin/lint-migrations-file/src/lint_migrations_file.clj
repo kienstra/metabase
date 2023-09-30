@@ -8,8 +8,7 @@
    [clojure.pprint :as pprint]
    [clojure.spec.alpha :as s]
    [clojure.string :as str]
-   [clojure.walk :as walk]
-   [metabase.util :as u]))
+   [clojure.walk :as walk]))
 
 (set! *warn-on-reflection* true)
 
@@ -75,7 +74,7 @@
       (let [op     (cond (:createTable x) :createTable (:addColumn x) :addColumn)
             cols   (filter (fn [col-def]
                              (contains? target-types
-                                        (u/lower-case-en (or (get-in col-def [:column :type]) ""))))
+                                        (str/lower-case (or (get-in col-def [:column :type]) ""))))
                      (get-in x [op :columns]))]
         (doseq [col cols]
           (swap! found-cols conj col))
@@ -83,7 +82,7 @@
 
       ;; a modifyDataType change; see if it changes a column to target-type
       (:modifyDataType x)
-      (if (= target-types (u/lower-case-en (or (get-in x [:modifyDataType :newDataType]) "")))
+      (if (= target-types (str/lower-case (or (get-in x [:modifyDataType :newDataType]) "")))
         (do (swap! found-cols conj x)
             x)
         x)
