@@ -76,8 +76,6 @@
                         "resources"
                         "license-frontend-third-party.txt") license-text))))
 
-
-
 (defn- build-uberjar! [edition]
   {:pre [(#{:oss :ee} edition)]}
   (u/delete-file-if-exists! uberjar/uberjar-filename)
