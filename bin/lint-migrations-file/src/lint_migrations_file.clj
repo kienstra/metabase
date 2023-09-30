@@ -181,6 +181,6 @@
     (log/info "Ok.")
     (System/exit 0)
     (catch Throwable e
-      (log/infof (Throwable->map e))
-      (log/info (.getMessage e))
+      (log/errorf (Throwable->map e))
+      (log/error (.getMessage e))
       (System/exit 1))))
