@@ -2,7 +2,6 @@
   (:require
    [clojure.string :as str]
    [environ.core :as env]
-   [metabase.util :as u]
    [metabuild-common.output :as out]))
 
 (set! *warn-on-reflection* true)
