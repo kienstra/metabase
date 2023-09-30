@@ -39,10 +39,8 @@
         :when id]
     (maybe-parse-to-int id)))
 
-(defn distinct-change-set-ids?
-  "Get whether the change set ids are distinct.
-  there are actually two migration 32s, so that's the only exception we're allowing."
-  [change-log]
+(defn- distinct-change-set-ids? [change-log]
+  ;; there are actually two migration 32s, so that's the only exception we're allowing.
   (let [ids (remove (partial = 32) (change-set-ids change-log))]
     ;; can't apply distinct? with so many IDs
     (= (count ids) (count (set ids)))))
@@ -55,9 +53,7 @@
     (compare x y)
     (compare (str x) (str y))))
 
-(defn change-set-ids-in-order?
-  "Get whether the change set ids are in order."
-  [change-log]
+(defn- change-set-ids-in-order? [change-log]
   (let [ids (change-set-ids change-log)]
     (= ids (sort-by identity compare-ids ids))))
 
@@ -126,9 +122,7 @@
   "All change sets with an ID >= this number will be validated with the strict spec."
   172)
 
-(defn change-set-validation-level
-  "Get the strictness of the validation level."
-  [{id :id}]
+(defn- change-set-validation-level [{id :id}]
   (or (when-let [id (maybe-parse-to-int id)]
         (when (and (int? id)
                    (< id strict-change-set-cutoff))
@@ -159,13 +153,10 @@
                       (or (dissoc data ::s/value) {})))))
   :ok)
 
-(def filename
-  "The migrations filename."
+(def ^:private filename
   "../../resources/migrations/000_migrations.yaml")
 
-(defn migrations
-  "Get the migrations from the file."
-  []
+(defn- migrations []
   (let [file (io/file filename)]
     (assert (.exists file) (format "%s does not exist" filename))
     (letfn [(fix-vals [x]
