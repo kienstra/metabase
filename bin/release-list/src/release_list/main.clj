@@ -2,8 +2,7 @@
 (ns release-list.main
   (:gen-class)
   (:require [babashka.process :refer [shell]]
-            [clojure.string  :as str]
-            [metabase.util.log :as log]))
+            [clojure.string  :as str]))
 
 (set! *warn-on-reflection* true)
 
@@ -106,4 +105,4 @@
               prep-links
               group-versions
               prep-page))
-    (log/info "List of releases updated in `docs/releases.md`.")))
+    (println "List of releases updated in `docs/releases.md`.")))

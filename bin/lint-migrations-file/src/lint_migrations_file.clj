@@ -5,11 +5,11 @@
    [change-set.unstrict]
    [clj-yaml.core :as yaml]
    [clojure.java.io :as io]
+   [clojure.pprint :as pprint]
    [clojure.spec.alpha :as s]
    [clojure.string :as str]
    [clojure.walk :as walk]
-   [metabase.util :as u]
-   [metabase.util.log :as log]))
+   [metabase.util :as u]))
 
 (set! *warn-on-reflection* true)
 
@@ -149,7 +149,7 @@
   [migrations]
   (when (= (s/conform ::migrations migrations) ::s/invalid)
     (let [data (s/explain-data ::migrations migrations)]
-      (throw (ex-info (str "Validation failed:\n" (with-out-str (log/infof (mapv #(dissoc % :val)
+      (throw (ex-info (str "Validation failed:\n" (with-out-str (pprint/pprint (mapv #(dissoc % :val)
                                                                                      (::s/problems data)))))
                       (or (dissoc data ::s/value) {})))))
   :ok)
@@ -175,12 +175,12 @@
 
   `./bin/lint-migrations-file.sh`"
   []
-  (log/info "Check Liquibase migrations file...")
+  (println "Check Liquibase migrations file...")
   (try
     (validate-all)
-    (log/info "Ok.")
+    (println "Ok.")
     (System/exit 0)
     (catch Throwable e
-      (log/errorf (Throwable->map e))
-      (log/error (.getMessage e))
+      (pprint/pprint (Throwable->map e))
+      (println (.getMessage e))
       (System/exit 1))))
