@@ -39,7 +39,7 @@
                      "HOME"       (env/env :user-home)
                      "WEBPACK_BUNDLE"   "production"
                      "MB_EDITION" mb-edition}}
-              "yarn" "build"))
+              "yarn" "build-release"))
       (u/step "Build static viz"
         (u/sh {:dir u/project-root-directory
                :env {"PATH"       (env/env :path)
