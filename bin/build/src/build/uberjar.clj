@@ -129,10 +129,12 @@
   (.write (manifest) os)
   (.flush os))
 
-;; the customizations we need to make are not currently supported by tools.build -- see
-;; https://ask.clojure.org/index.php/10827/ability-customize-manifest-created-clojure-tools-build-uber -- so we need
-;; to do it by hand for the time being.
-(defn- update-manifest! []
+(defn update-manifest!
+  "Start a build step that updates the manifest.
+  The customizations we need to make are not currently supported by tools.build -- see
+  https://ask.clojure.org/index.php/10827/ability-customize-manifest-created-clojure-tools-build-uber -- so we need
+  to do it by hand for the time being."
+  []
   (u/step "Update META-INF/MANIFEST.MF"
     (with-open [fs (FileSystems/newFileSystem (URI. (str "jar:file:" (.getAbsolutePath (io/file "target/uberjar/metabase.jar"))))
                                               Collections/EMPTY_MAP)]
