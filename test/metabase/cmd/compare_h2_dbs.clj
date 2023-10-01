@@ -124,12 +124,12 @@
     (sql-jdbc.execute/do-with-connection-with-options
      driver/*driver*
      spec-1
-     {:write? true}
+     nil
      (fn [_]
        (sql-jdbc.execute/do-with-connection-with-options
         driver/*driver*
-        spec-1
-        {:write? true}
+        spec-2
+        nil
         (fn [_]
           (or (different-table-names? spec-1 spec-2)
               (different-rows? spec-1 spec-2))))))))
