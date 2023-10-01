@@ -4,6 +4,7 @@
    [clojure.data :as data]
    [clojure.java.jdbc :as jdbc]
    [metabase.db.jdbc-protocols]
+   [metabase.driver :as driver]
    [metabase.driver.sql-jdbc.execute :as sql-jdbc.execute]
    [metabase.util :as u]
    [metabase.util.log :as log]))
@@ -119,16 +120,16 @@
   "Diff contents of 2 DBs. Returns truthy if there is a difference, falsey if not."
   [db-file-1 db-file-2]
   (let [spec-1 (jdbc-spec db-file-1)
-        spec-2 (jdbc-spec db-file-2)
-        conn-1 (assoc spec-1 :connection (sql-jdbc.execute/do-with-connection-with-options
-                                          :h2
-                                          spec-1
-                                          nil
-                                          identity))
-        conn-2 (assoc spec-2 :connection (sql-jdbc.execute/do-with-connection-with-options
-                                          :h2
-                                          spec-2
-                                          nil
-                                          identity))]
-    (or (different-table-names? conn-1 conn-2)
-        (different-rows? conn-1 conn-2))))
+        spec-2 (jdbc-spec db-file-2)]
+    (sql-jdbc.execute/do-with-connection-with-options
+     driver/*driver*
+     spec-1
+     {:write? true}
+     (fn [_]
+       (sql-jdbc.execute/do-with-connection-with-options
+        driver/*driver*
+        spec-1
+        {:write? true}
+        (fn [_]
+          (or (different-table-names? spec-1 spec-2)
+              (different-rows? spec-1 spec-2))))))))
