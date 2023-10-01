@@ -172,7 +172,7 @@
 (defn -main
   "Entry point for Clojure CLI task `lint-migrations-file`. Run it with
 
-  `./bin/lint-migrations-file.sh`"
+    `./bin/lint-migrations-file.sh`"
   []
   (println "Check Liquibase migrations file...")
   (try

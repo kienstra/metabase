@@ -378,7 +378,7 @@
 (defn -main
   "Entry point for Clojure CLI task `generate-automagic-dashboards-pot`. Run it with
 
-    clojure -M:generate-automagic-dashboards-pot"
+    `clojure -M:generate-automagic-dashboards-pot`"
   [& _]
   (->> (all-dashboard-templates)
        (mapcat extract-localized-strings)
