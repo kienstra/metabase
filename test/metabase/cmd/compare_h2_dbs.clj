@@ -4,6 +4,7 @@
    [clojure.data :as data]
    [clojure.java.jdbc :as jdbc]
    [metabase.db.jdbc-protocols]
+   [metabase.driver.sql-jdbc.execute :as sql-jdbc.execute]
    [metabase.util :as u]
    [metabase.util.log :as log]))
 
@@ -41,11 +42,16 @@
 (defn- table-names
   "Return a sorted collection of all non-system table names."
   [spec]
-  (jdbc/with-db-metadata [metadata spec]
-    (let [result (jdbc/metadata-result
-                  (.getTables metadata nil "PUBLIC" nil
-                              (into-array String ["TABLE" "VIEW" "FOREIGN TABLE" "MATERIALIZED VIEW"])))]
-      (sort (remove ignored-table-names (map :table_name result))))))
+  (sql-jdbc.execute/do-with-connection-with-options
+   :h2
+   spec
+   nil
+   (fn [^java.sql.Connection conn]
+     (let [metadata (.getMetaData conn)
+           result (jdbc/metadata-result
+                   (.getTables metadata nil "PUBLIC" nil
+                               (into-array String ["TABLE" "VIEW" "FOREIGN TABLE" "MATERIALIZED VIEW"])))]
+       (sort (remove ignored-table-names (map :table_name result)))))))
 
 (defmulti ^:private normalize-value
   class)
