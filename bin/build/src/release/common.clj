@@ -5,6 +5,9 @@
 
 (set! *warn-on-reflection* true)
 
+(def static-cloudfront-distribution-id
+  "The CloudFront distribution where the version info lives."
+  "E1HU16PWP1JPMC")
 (def cloudfront-distribution-id
   "The CloudFront distribution where our artifacts live."
   "E35CJLWZIZVG7K")
