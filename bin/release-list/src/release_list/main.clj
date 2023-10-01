@@ -93,7 +93,7 @@
   "Entry point for creating a release list.
   Run it from `bin/release-list/` with
 
-    `bb -m release-list.main`"
+    bb -m release-list.main"
   []
   ;; Clear existing list of releases
   (let [target "../../docs/releases.md"]
