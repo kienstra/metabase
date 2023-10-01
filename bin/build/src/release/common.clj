@@ -5,6 +5,9 @@
 
 (set! *warn-on-reflection* true)
 
+(def downloads-cloudfront-distribution-id
+  "The CloudFront distribution where the downloads live."
+  "E35CJLWZIZVG7K")
 (def static-cloudfront-distribution-id
   "The CloudFront distribution where the version info lives."
   "E1HU16PWP1JPMC")
