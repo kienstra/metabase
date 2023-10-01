@@ -6,8 +6,7 @@
    [metabase.db.jdbc-protocols]
    [metabase.driver.sql-jdbc.execute :as sql-jdbc.execute]
    [metabase.util :as u]
-   [metabase.util.log :as log]
-   [toucan2.core :as t2]))
+   [metabase.util.log :as log]))
 
 (set! *warn-on-reflection* true)
 
@@ -119,7 +118,17 @@
 (defn different-contents?
   "Diff contents of 2 DBs. Returns truthy if there is a difference, falsey if not."
   [db-file-1 db-file-2]
-  (t2/with-connection [conn-1 (jdbc-spec db-file-1)]
-    (t2/with-connection [conn-2 (jdbc-spec db-file-2)]
-      (or (different-table-names? conn-1 conn-2)
-          (different-rows? conn-1 conn-2)))))
+  (let [conn-1 (sql-jdbc.execute/do-with-connection-with-options
+                :h2
+                (jdbc-spec db-file-1)
+                nil
+                identity)
+        conn-2 (sql-jdbc.execute/do-with-connection-with-options
+                :h2
+                (jdbc-spec db-file-2)
+                nil
+                identity)]
+    (println "conn-1 is")
+    (println conn-1)
+    (or (different-table-names? conn-1 conn-2)
+        (different-rows? conn-1 conn-2))))
