@@ -87,7 +87,7 @@
 
 
 (defn- test-query []
-  (mt/dataset sample-dataset
+  (mt/dataset test-data
     (mt/$ids orders
       {:database     (mt/id)
        :type         :query
@@ -111,7 +111,7 @@
 
 (deftest generate-queries-test
   (mt/test-drivers (api.pivots/applicable-drivers)
-    (mt/dataset sample-dataset
+    (mt/dataset test-data
       (let [request {:database   (mt/db)
                      :query      {:source-table (mt/$ids $$orders)
                                   :aggregation  [[:count] [:sum (mt/$ids $orders.quantity)]]
@@ -193,7 +193,7 @@
 
 (defn- distinct-values [table col]
   (->> (mt/rows
-         (mt/dataset sample-dataset
+         (mt/dataset test-data
            (qp/process-query
             {:database (mt/id)
              :type     :query
@@ -233,14 +233,14 @@
            (qp.pivot/run-pivot-query (api.pivots/pivot-query) nil rff nil)))))
 
 (deftest parameters-query-test
-  (mt/dataset sample-dataset
+  (mt/dataset test-data
     (is (schema= {:status    (s/eq :completed)
                   :row_count (s/eq 137)
                   s/Keyword  s/Any}
                  (qp.pivot/run-pivot-query (api.pivots/parameters-query))))))
 
 (deftest pivots-should-not-return-expressions-test
-  (mt/dataset sample-dataset
+  (mt/dataset test-data
     (let [query (assoc (mt/mbql-query orders
                          {:aggregation [[:count]]
                           :breakout    [$user_id->people.source $product_id->products.category]})
@@ -285,7 +285,7 @@
 
 (deftest pivot-query-should-work-without-data-permissions-test
   (testing "Pivot queries should work if the current user only has permissions to view the Card -- no data perms (#14989)"
-    (mt/dataset sample-dataset
+    (mt/dataset test-data
       (mt/with-temp-copy-of-db
         (let [query (mt/mbql-query orders
                       {:aggregation [[:count]]
@@ -315,7 +315,7 @@
 
 (deftest ^:parallel pivot-with-order-by-test
   (testing "Pivot queries should work if there is an `:order-by` clause (#17198)"
-    (mt/dataset sample-dataset
+    (mt/dataset test-data
       (let [query (mt/mbql-query products
                     {:breakout    [$category]
                      :aggregation [[:count]]
@@ -330,7 +330,7 @@
 
 (deftest pivot-with-order-by-metric-test
   (testing "Pivot queries should allow ordering by aggregation (#22872)"
-    (mt/dataset sample-dataset
+    (mt/dataset test-data
       (let  [query (mt/mbql-query reviews
                      {:breakout [$rating [:field (mt/id :reviews :created_at) {:temporal-unit :year}]]
                       :aggregation [[:count]]

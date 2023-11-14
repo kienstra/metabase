@@ -422,7 +422,7 @@
 (deftest ^:parallel reconcile-unix-timestamps-test
   (testing "temporal type reconciliation should work for UNIX timestamps (#15376)"
     (mt/test-driver :bigquery-cloud-sdk
-      (mt/dataset sample-dataset
+      (mt/dataset test-data
         (qp.store/with-metadata-provider (lib.tu/merged-mock-metadata-provider
                                           (lib.metadata.jvm/application-database-metadata-provider (mt/id))
                                           {:fields [{:id                (mt/id :reviews :rating)
@@ -1004,7 +1004,7 @@
 
 (deftest ^:parallel custom-expression-args-quoted
   (mt/test-driver :bigquery-cloud-sdk
-    (mt/dataset sample-dataset
+    (mt/dataset test-data
       (testing "Arguments to custom aggregation expression functions have backticks applied properly"
         (is (= {:mbql?      true
                 :params     nil

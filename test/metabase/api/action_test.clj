@@ -192,7 +192,7 @@
                                                   [:template-tag "source"]]}]})]
     (testing "when action's database and model's database disagree"
       (testing "Both dbs are checked for actions enabled at creation"
-        (mt/dataset sample-dataset
+        (mt/dataset test-data
           (let [sample-dataset-id (mt/id)]
             (mt/dataset test-data
               (mt/with-actions-enabled
@@ -209,7 +209,7 @@
                                      :data {:database-id sample-dataset-id}}
                                     response))))))))))
       (testing "When executing, both dbs are checked for enabled"
-        (mt/dataset sample-dataset
+        (mt/dataset test-data
           (let [sample-dataset-id (mt/id)]
             (mt/with-actions-test-data-and-actions-enabled
               (mt/with-actions [{model-id :id} {:dataset true
