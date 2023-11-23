@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     outputs:
-      backend_all: ${{ steps.changes.outputs.backend_all }}
+      backend_all: 'true'
       frontend_sources: ${{ steps.changes.outputs.frontend_sources }}
     steps:
       - uses: actions/checkout@v3
