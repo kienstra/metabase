@@ -46,7 +46,7 @@
 (deftest can-connect-test?
   (mt/test-driver
    :mongo
-   (mt/dataset sample-dataset
+   (mt/dataset test-data
      (mt/db)
      (doseq [{:keys [details expected message]} [{:details  {:host   "localhost"
                                                              :port   3000
