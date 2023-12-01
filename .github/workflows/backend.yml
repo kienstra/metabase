@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     outputs:
-      backend_all: ${{ steps.changes.outputs.backend_all }}
+      backend_all: 'true'
       frontend_sources: ${{ steps.changes.outputs.frontend_sources }}
     steps:
       - uses: actions/checkout@v3
@@ -95,6 +95,10 @@ jobs:
       DOWNLOAD_URL: https://github.com/clj-kondo/clj-kondo/releases/download
     steps:
       - uses: actions/checkout@v3
+      - name: Prepare back-end environment
+        uses: ./.github/actions/prepare-backend
+        with:
+          m2-cache-key: 'kondo'
       - name: Install clj-kondo
         run: |
           curl -OL ${DOWNLOAD_URL}/v${CLJ_KONDO_VERSION}/clj-kondo-${CLJ_KONDO_VERSION}-linux-static-amd64.zip

@@ -46,6 +46,7 @@
 (deftest can-connect-test?
   (mt/test-driver
    :mongo
+   (mt/db)
    (doseq [{:keys [details expected message]} [{:details  {:host   "localhost"
                                                            :port   3000
                                                            :dbname "bad-db-name"}
@@ -56,12 +57,12 @@
                                                            :port   27017
                                                            :user   "metabase"
                                                            :pass   "metasample123"
-                                                           :dbname "metabase-test"}
+                                                           :dbname "sample-dataset"}
                                                 :expected true}
                                                {:details  {:host   "localhost"
                                                            :user   "metabase"
                                                            :pass   "metasample123"
-                                                           :dbname "metabase-test"}
+                                                           :dbname "sample-dataset"}
                                                 :expected true
                                                 :message  "should use default port 27017 if not specified"}
                                                {:details  {:host   "123.4.5.6"
@@ -71,7 +72,7 @@
                                                            :port   3000
                                                            :dbname "bad-db-name?connectTimeoutMS=50"}
                                                 :expected false}
-                                               {:details  {:conn-uri "mongodb://metabase:metasample123@localhost:27017/metabase-test?authSource=admin"}
+                                               {:details  {:conn-uri "mongodb://metabase:metasample123@localhost:27017/sample-dataset?authSource=admin"}
                                                 :expected (not (tdm/ssl-required?))}
                                                {:details  {:conn-uri "mongodb://localhost:3000/bad-db-name?connectTimeoutMS=50"}
                                                 :expected false}]
