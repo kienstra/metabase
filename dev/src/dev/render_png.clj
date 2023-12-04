@@ -118,7 +118,7 @@
   ;; The expected rendered results should be:
   ;; - The plain question will not have custom formatting applied
   ;; - The model and derived query will have custom formatting applied
-  (mt/dataset sample-dataset
+  (mt/dataset test-data
     (mt/with-temp [Card {base-card-id :id} {:dataset_query {:database (mt/id)
                                                             :type     :query
                                                             :query    {:source-table (mt/id :orders)

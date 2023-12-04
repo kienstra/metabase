@@ -15,61 +15,61 @@
 
 (deftest result-metadata-preservation-in-html-static-viz-test
   (testing "Results metadata applied to a model or query based on a model should be used in the HTML rendering of the pulse email."
-    (mt/dataset sample-dataset
+    (mt/dataset test-data
       (mt/with-temp [Card {base-card-id :id} {:name          "Base question - no special metadata"
                                               :dataset_query {:database (mt/id)
                                                               :type     :query
                                                               :query    {:source-table (mt/id :orders)
-                                                                         :expressions  {"Tax Rate" [:/
+                                                                          :expressions  {"Tax Rate" [:/
                                                                                                     [:field (mt/id :orders :tax) {:base-type :type/Float}]
                                                                                                     [:field (mt/id :orders :total) {:base-type :type/Float}]]},
-                                                                         :fields       [[:field (mt/id :orders :tax) {:base-type :type/Float}]
+                                                                          :fields       [[:field (mt/id :orders :tax) {:base-type :type/Float}]
                                                                                         [:field (mt/id :orders :total) {:base-type :type/Float}]
                                                                                         [:expression "Tax Rate"]]
-                                                                         :limit        10}}}
-                     Card {model-card-id :id} {:name            "Model with percent semantic type"
-                                               :dataset         true
-                                               :dataset_query   {:type     :query
-                                                                 :database (mt/id)
-                                                                 :query    {:source-table (format "card__%s" base-card-id)}}
-                                               :result_metadata [{:name         "TAX"
+                                                                          :limit        10}}}
+                      Card {model-card-id :id} {:name            "Model with percent semantic type"
+                                                :dataset         true
+                                                :dataset_query   {:type     :query
+                                                                  :database (mt/id)
+                                                                  :query    {:source-table (format "card__%s" base-card-id)}}
+                                                :result_metadata [{:name         "TAX"
                                                                   :display_name "Tax"
                                                                   :base_type    :type/Float}
-                                                                 {:name         "TOTAL"
+                                                                  {:name         "TOTAL"
                                                                   :display_name "Total"
                                                                   :base_type    :type/Float}
-                                                                 {:name          "Tax Rate"
+                                                                  {:name          "Tax Rate"
                                                                   :display_name  "Tax Rate"
                                                                   :base_type     :type/Float
                                                                   :semantic_type :type/Percentage
                                                                   :field_ref     [:field "Tax Rate" {:base-type :type/Float}]}]}
-                     Card {question-card-id :id} {:name          "Query based on model"
+                      Card {question-card-id :id} {:name          "Query based on model"
                                                   :dataset_query {:type     :query
                                                                   :database (mt/id)
                                                                   :query    {:source-table (format "card__%s" model-card-id)}}}
-                     Dashboard {dash-id :id} {:name "just dash"}
-                     DashboardCard {base-dash-card-id :id} {:dashboard_id dash-id
+                      Dashboard {dash-id :id} {:name "just dash"}
+                      DashboardCard {base-dash-card-id :id} {:dashboard_id dash-id
                                                             :card_id      base-card-id}
-                     DashboardCard {model-dash-card-id :id} {:dashboard_id dash-id
-                                                             :card_id      model-card-id}
-                     DashboardCard {question-dash-card-id :id} {:dashboard_id dash-id
+                      DashboardCard {model-dash-card-id :id} {:dashboard_id dash-id
+                                                              :card_id      model-card-id}
+                      DashboardCard {question-dash-card-id :id} {:dashboard_id dash-id
                                                                 :card_id      question-card-id}
-                     Pulse {pulse-id :id
+                      Pulse {pulse-id :id
                             :as      pulse} {:name         "Test Pulse"
-                                             :dashboard_id dash-id}
-                     PulseCard _ {:pulse_id          pulse-id
+                                              :dashboard_id dash-id}
+                      PulseCard _ {:pulse_id          pulse-id
                                   :card_id           base-card-id
                                   :dashboard_card_id base-dash-card-id}
-                     PulseCard _ {:pulse_id          pulse-id
+                      PulseCard _ {:pulse_id          pulse-id
                                   :card_id           model-card-id
                                   :dashboard_card_id model-dash-card-id}
-                     PulseCard _ {:pulse_id          pulse-id
+                      PulseCard _ {:pulse_id          pulse-id
                                   :card_id           question-card-id
                                   :dashboard_card_id question-dash-card-id}
-                     PulseChannel {pulse-channel-id :id} {:channel_type :email
+                      PulseChannel {pulse-channel-id :id} {:channel_type :email
                                                           :pulse_id     pulse-id
                                                           :enabled      true}
-                     PulseChannelRecipient _ {:pulse_channel_id pulse-channel-id
+                      PulseChannelRecipient _ {:pulse_channel_id pulse-channel-id
                                               :user_id          (mt/user->id :rasta)}]
         (mt/with-fake-inbox
           (with-redefs [email/bcc-enabled? (constantly false)]
@@ -85,16 +85,16 @@
                               (hik.s/class "pulse-body")
                               doc)
                 [base-data-row
-                 model-data-row
-                 question-data-row] (map
+                  model-data-row
+                  question-data-row] (map
                                       (fn [data-table]
                                         (->> (hik.s/select
-                                               (hik.s/child
-                                                 (hik.s/tag :tbody)
-                                                 (hik.s/tag :tr)
-                                                 hik.s/last-child)
-                                               data-table)
-                                             (map (comp first :content))))
+                                                (hik.s/child
+                                                  (hik.s/tag :tbody)
+                                                  (hik.s/tag :tr)
+                                                  hik.s/last-child)
+                                                data-table)
+                                              (map (comp first :content))))
                                       data-tables)]
             (testing "The data from the first question is just numbers."
               (is (every? (partial re-matches #"\d+\.\d+") base-data-row)))

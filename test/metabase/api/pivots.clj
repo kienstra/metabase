@@ -22,15 +22,15 @@
    (pivot-query true))
 
   ([include-pivot-options?]
-   (mt/dataset sample-dataset
+   (mt/dataset test-data
      (merge
-      (mt/mbql-query orders
-                     {:aggregation [[:count] [:sum $orders.quantity]]
-                      :breakout    [$orders.user_id->people.state
-                                    $orders.user_id->people.source
-                                    $orders.product_id->products.category]})
-      (when include-pivot-options?
-        pivot-query-options)))))
+       (mt/mbql-query orders
+                      {:aggregation [[:count] [:sum $orders.quantity]]
+                       :breakout    [$orders.user_id->people.state
+                                     $orders.user_id->people.source
+                                     $orders.product_id->products.category]})
+       (when include-pivot-options?
+         pivot-query-options)))))
 
 (defn filters-query
   "A pivot table query with a filter applied"
