@@ -163,7 +163,7 @@ export function visitDashboard(dashboard_id, { params = {} } = {}) {
     url: `/api/dashboard/${dashboard_id}`,
     // That's why we have to ignore failures
     failOnStatusCode: false,
-  }).then(({ status, body: { dashcards, tabs } }) => {
+  }).then(({ status, body: { dashcards } }) => {
     const dashboardAlias = "getDashboard" + dashboard_id;
 
     cy.intercept("GET", `/api/dashboard/${dashboard_id}`).as(dashboardAlias);
@@ -171,12 +171,9 @@ export function visitDashboard(dashboard_id, { params = {} } = {}) {
     const canViewDashboard = hasAccess(status);
 
     let validQuestions = dashboardHasQuestions(dashcards);
-
-    // if dashboard has tabs, only expect cards on the first tab
-    if (tabs?.length > 0) {
-      const firstTab = tabs[0];
+    if (params.tab != null) {
       validQuestions = validQuestions.filter(
-        card => card.dashboard_tab_id === firstTab.id,
+        card => card.dashboard_tab_id === params.tab,
       );
     }
 

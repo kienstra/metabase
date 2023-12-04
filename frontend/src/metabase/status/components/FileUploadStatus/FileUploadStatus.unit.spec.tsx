@@ -7,7 +7,7 @@ import { createMockUpload, createMockState } from "metabase-types/store/mocks";
 import { renderWithProviders } from "__support__/ui";
 import { createMockCollection } from "metabase-types/api/mocks";
 import CollectionHeader from "metabase/collections/containers/CollectionHeader";
-import { FileUploadStatus } from "./FileUploadStatus";
+import FileUploadStatus from "./FileUploadStatus";
 
 describe("FileUploadStatus", () => {
   const firstCollectionId = 1;
@@ -19,15 +19,13 @@ describe("FileUploadStatus", () => {
   const secondCollectionId = 2;
 
   beforeEach(() => {
-    fetchMock.get("path:/api/collection/1", firstCollection);
-
-    fetchMock.get(
-      "path:/api/collection/2",
+    fetchMock.get("path:/api/collection", [
+      firstCollection,
       createMockCollection({
-        id: 2,
+        id: secondCollectionId,
         name: "Second Collection",
       }),
-    );
+    ]);
   });
 
   afterEach(() => {

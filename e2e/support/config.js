@@ -125,7 +125,7 @@ const mainConfig = {
   ...defaultConfig,
   viewportHeight: 800,
   viewportWidth: 1280,
-  numTestsKeptInMemory: process.env["CI"] ? 1 : 50,
+  numTestsKeptInMemory: 1,
   reporter: "mochawesome",
   reporterOptions: {
     reportDir: "cypress/reports/mochareports",

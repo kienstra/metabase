@@ -1,33 +1,39 @@
-import _ from "underscore";
-
 import { useSelector, useDispatch } from "metabase/lib/redux";
 import { getAllUploads, clearAllUploads } from "metabase/redux/uploads";
-import type { CollectionId } from "metabase-types/api";
+import Collections from "metabase/entities/collections/collections";
+import type { Collection } from "metabase-types/api";
 import type { FileUpload } from "metabase-types/store/upload";
 import { isUploadAborted, isUploadInProgress } from "metabase/lib/uploads";
 
-import { useCollectionQuery } from "metabase/common/hooks";
 import useStatusVisibility from "../../hooks/use-status-visibility";
 import FileUploadStatusLarge from "../FileUploadStatusLarge";
 
-export const FileUploadStatus = () => {
+const FileUploadStatus = ({
+  collections = [],
+}: {
+  collections: Collection[];
+}) => {
   const uploads = useSelector(getAllUploads);
   const dispatch = useDispatch();
   const resetUploads = () => dispatch(clearAllUploads());
 
-  const groupedCollections = _.groupBy(uploads, "collectionId");
-
-  const collections = Object.keys(groupedCollections) as CollectionId[];
+  const uploadCollections = collections.filter(collection =>
+    uploads.some(upload => upload.collectionId === collection.id),
+  );
 
   return (
     <>
-      {collections.map(collectionId => {
+      {uploadCollections.map(collection => {
+        const collectionUploads = uploads.filter(
+          ({ collectionId }) => collectionId === collection.id,
+        );
+
         return (
           <FileUploadStatusContent
-            key={`uploads-${collectionId}`}
-            uploads={groupedCollections[collectionId]}
+            key={`uploads-${collection.id}`}
+            uploads={collectionUploads}
             resetUploads={resetUploads}
-            collectionId={collectionId}
+            collection={collection}
           />
         );
       })}
@@ -36,11 +42,11 @@ export const FileUploadStatus = () => {
 };
 
 const FileUploadStatusContent = ({
-  collectionId,
+  collection,
   uploads,
   resetUploads,
 }: {
-  collectionId: CollectionId;
+  collection: Collection;
   uploads: FileUpload[];
   resetUploads: () => void;
 }) => {
@@ -49,11 +55,7 @@ const FileUploadStatusContent = ({
   );
   const isVisible = useStatusVisibility(isActive);
 
-  const { data: collection, isLoading } = useCollectionQuery({
-    id: collectionId,
-  });
-
-  if (!isVisible || isLoading || !collection) {
+  if (!isVisible) {
     return null;
   }
 
@@ -65,3 +67,8 @@ const FileUploadStatusContent = ({
     />
   );
 };
+
+// eslint-disable-next-line import/no-default-export -- deprecated usage
+export default Collections.loadList({ loadingAndErrorWrapper: false })(
+  FileUploadStatus,
+);
