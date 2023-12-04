@@ -2309,18 +2309,19 @@
 
 (deftest pivot-card-test
   (mt/test-drivers (api.pivots/applicable-drivers)
-    (testing "POST /api/card/pivot/:card-id/query"
-      (t2.with-temp/with-temp [:model/Card card (api.pivots/pivot-card)]
-        (let [result (mt/user-http-request :rasta :post 202 (format "card/pivot/%d/query" (u/the-id card)))
-              rows   (mt/rows result)]
-          (is (= 1144 (:row_count result)))
-          (is (= "completed" (:status result)))
-          (is (= 6 (count (get-in result [:data :cols]))))
-          (is (= 1144 (count rows)))
+    (mt/dataset test-data
+      (testing "POST /api/card/pivot/:card-id/query"
+        (t2.with-temp/with-temp [:model/Card card (api.pivots/pivot-card)]
+          (let [result (mt/user-http-request :rasta :post 202 (format "card/pivot/%d/query" (u/the-id card)))
+                rows   (mt/rows result)]
+            (is (= 1144 (:row_count result)))
+            (is (= "completed" (:status result)))
+            (is (= 6 (count (get-in result [:data :cols]))))
+            (is (= 1144 (count rows)))
 
-          (is (= ["AK" "Affiliate" "Doohickey" 0 18 81] (first rows)))
-          (is (= ["MS" "Organic" "Gizmo" 0 16 42] (nth rows 445)))
-          (is (= [nil nil nil 7 18760 69540] (last rows))))))))
+            (is (= ["AK" "Affiliate" "Doohickey" 0 18 81] (first rows)))
+            (is (= ["MS" "Organic" "Gizmo" 0 16 42] (nth rows 445)))
+            (is (= [nil nil nil 7 18760 69540] (last rows)))))))))
 
 (deftest dataset-card
   (testing "Setting a question to a dataset makes it viz type table"
