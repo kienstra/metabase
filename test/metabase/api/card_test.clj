@@ -510,35 +510,35 @@
                              :semantic_type :type/Number}]})
 
 (deftest sereies-are-compatible-test
-  (mt/dataset test-data
+  (mt/dataset sample-dataset
     (testing "area-line-bar charts"
       (t2.with-temp/with-temp
         [:model/Card datetime-card       (merge (mt/card-with-source-metadata-for-query
                                                   (mt/mbql-query orders {:aggregation [[:sum $orders.total]]
-                                                                        :breakout    [!month.orders.created_at]}))
+                                                                         :breakout    [!month.orders.created_at]}))
                                                 {:visualization_settings {:graph.metrics    ["sum"]
                                                                           :graph.dimensions ["CREATED_AT"]}}
                                                 {:name    "datetime card"
-                                                :display :line})
-        :model/Card number-card         (merge (mt/card-with-source-metadata-for-query
+                                                 :display :line})
+         :model/Card number-card         (merge (mt/card-with-source-metadata-for-query
                                                   (mt/mbql-query orders {:aggregation [:count]
-                                                                        :breakout    [$orders.quantity]}))
+                                                                         :breakout    [$orders.quantity]}))
                                                 {:visualization_settings {:graph.metrics    ["count"]
                                                                           :graph.dimensions ["QUANTITY"]}}
                                                 {:name    "number card"
-                                                :display :line})
-        :model/Card without-metric-card (merge (mt/card-with-source-metadata-for-query
+                                                 :display :line})
+         :model/Card without-metric-card (merge (mt/card-with-source-metadata-for-query
                                                   (mt/mbql-query orders {:breakout    [!month.orders.created_at]}))
                                                 {:visualization_settings {:graph.dimensions ["CREATED_AT"]}}
                                                 {:name    "card has no metric"
-                                                :display :line})
-        :model/Card combo-card          (merge (mt/card-with-source-metadata-for-query
+                                                 :display :line})
+         :model/Card combo-card          (merge (mt/card-with-source-metadata-for-query
                                                   (mt/mbql-query orders {:aggregation [[:sum $orders.total]]
-                                                                        :breakout    [!month.orders.created_at]}))
+                                                                         :breakout    [!month.orders.created_at]}))
                                                 {:visualization_settings {:graph.metrics    ["sum"]
                                                                           :graph.dimensions ["CREATED_AT"]}}
                                                 {:name    "table card"
-                                                :display :combo})]
+                                                 :display :combo})]
         (testing "2 datetime cards can be combined"
           (is (true? (api.card/series-are-compatible? datetime-card datetime-card))))
 
@@ -2312,8 +2312,8 @@
                 (mt/user-http-request :crowberto :get 200 (format "card/%s/related" (u/the-id card)))))))
 
 (deftest pivot-card-test
-  (mt/dataset test-data
-    (mt/test-drivers (api.pivots/applicable-drivers)
+  (mt/test-drivers (api.pivots/applicable-drivers)
+    (mt/dataset sample-dataset
       (testing "POST /api/card/pivot/:card-id/query"
         (t2.with-temp/with-temp [:model/Card card (api.pivots/pivot-card)]
           (let [result (mt/user-http-request :rasta :post 202 (format "card/pivot/%d/query" (u/the-id card)))
