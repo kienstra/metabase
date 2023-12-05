@@ -46,42 +46,41 @@
 (deftest can-connect-test?
   (mt/test-driver
    :mongo
-   (mt/dataset sample-dataset
-     (mt/db)
-     (doseq [{:keys [details expected message]} [{:details  {:host   "localhost"
-                                                             :port   3000
-                                                             :dbname "bad-db-name"}
-                                                  :expected false}
-                                                 {:details  {}
-                                                  :expected false}
-                                                 {:details  {:host   "localhost"
-                                                             :port   27017
-                                                             :user   "metabase"
-                                                             :pass   "metasample123"
-                                                             :dbname "sample-dataset"}
-                                                  :expected true}
-                                                 {:details  {:host   "localhost"
-                                                             :user   "metabase"
-                                                             :pass   "metasample123"
-                                                             :dbname "sample-dataset"}
-                                                  :expected true
-                                                  :message  "should use default port 27017 if not specified"}
-                                                 {:details  {:host   "123.4.5.6"
-                                                             :dbname "bad-db-name?connectTimeoutMS=50"}
-                                                  :expected false}
-                                                 {:details  {:host   "localhost"
-                                                             :port   3000
-                                                             :dbname "bad-db-name?connectTimeoutMS=50"}
-                                                  :expected false}
-                                                 {:details  {:conn-uri "mongodb://metabase:metasample123@localhost:27017/sample-dataset?authSource=admin"}
-                                                  :expected (not (tdm/ssl-required?))}
-                                                 {:details  {:conn-uri "mongodb://localhost:3000/bad-db-name?connectTimeoutMS=50"}
-                                                  :expected false}]
-             :let [ssl-details (tdm/conn-details details)]]
-       (testing (str "connect with " details)
-         (is (= expected
-                (driver.u/can-connect-with-details? :mongo ssl-details))
-             (str message)))))))
+   (mt/db)
+   (doseq [{:keys [details expected message]} [{:details  {:host   "localhost"
+                                                           :port   3000
+                                                           :dbname "bad-db-name"}
+                                                :expected false}
+                                               {:details  {}
+                                                :expected false}
+                                               {:details  {:host   "localhost"
+                                                           :port   27017
+                                                           :user   "metabase"
+                                                           :pass   "metasample123"
+                                                           :dbname "test-data"}
+                                                :expected true}
+                                               {:details  {:host   "localhost"
+                                                           :user   "metabase"
+                                                           :pass   "metasample123"
+                                                           :dbname "test-data"}
+                                                :expected true
+                                                :message  "should use default port 27017 if not specified"}
+                                               {:details  {:host   "123.4.5.6"
+                                                           :dbname "bad-db-name?connectTimeoutMS=50"}
+                                                :expected false}
+                                               {:details  {:host   "localhost"
+                                                           :port   3000
+                                                           :dbname "bad-db-name?connectTimeoutMS=50"}
+                                                :expected false}
+                                               {:details  {:conn-uri "mongodb://metabase:metasample123@localhost:27017/test-data?authSource=admin"}
+                                                :expected (not (tdm/ssl-required?))}
+                                               {:details  {:conn-uri "mongodb://localhost:3000/bad-db-name?connectTimeoutMS=50"}
+                                                :expected false}]
+           :let [ssl-details (tdm/conn-details details)]]
+     (testing (str "connect with " details)
+       (is (= expected
+              (driver.u/can-connect-with-details? :mongo ssl-details))
+           (str message))))))
 
 (deftest database-supports?-test
   (mt/test-driver :mongo
@@ -186,7 +185,11 @@
     (is (= #{{:schema nil, :name "checkins"}
              {:schema nil, :name "categories"}
              {:schema nil, :name "users"}
-             {:schema nil, :name "venues"}}
+             {:schema nil, :name "venues"}
+             {:schema nil, :name "orders"}
+             {:schema nil, :name "people"}
+             {:schema nil, :name "products"}
+             {:schema nil, :name "reviews"}}
             (:tables (driver/describe-database :mongo (mt/db)))))))
 
 (deftest describe-table-test
@@ -309,6 +312,10 @@
   (mt/test-driver :mongo
     (is (= [{:active true, :name "categories"}
             {:active true, :name "checkins"}
+            {:active true, :name "orders"}
+            {:active true, :name "people"}
+            {:active true, :name "products"}
+            {:active true, :name "reviews"}
             {:active true, :name "users"}
             {:active true, :name "venues"}]
            (for [field (t2/select [Table :name :active]
