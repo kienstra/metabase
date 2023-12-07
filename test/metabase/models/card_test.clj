@@ -488,7 +488,7 @@
                (t2/select 'ParameterCard :card_id source-card-id)))))))
 
 (deftest cleanup-parameter-on-card-changes-test
-  (mt/dataset
+  (mt/dataset test-data
     (mt/with-temp
       [:model/Card {source-card-id :id} (merge (mt/card-with-source-metadata-for-query
                                                 (mt/mbql-query products {:fields [(mt/$ids $products.title)
@@ -547,17 +547,17 @@
                                              :value_field (mt/$ids $products.title)}}]
                     (t2/select-one-fn :parameters :model/Card :id (:id card)))))))
 
-      (testing "on archive card"
-        (t2/update! :model/Card source-card-id {:archived true})
+     (testing "on archive card"
+       (t2/update! :model/Card source-card-id {:archived true})
 
-        (testing "ParameterCard for card is removed"
-          (is (=? [] (t2/select ParameterCard :card_id source-card-id))))
+       (testing "ParameterCard for card is removed"
+         (is (=? [] (t2/select ParameterCard :card_id source-card-id))))
 
-        (testing "update the dashboard parameter and remove values_config of card"
-          (is (=? [{:id   "param_1"
-                    :name "Param 1"
-                    :type :category}]
-                  (t2/select-one-fn :parameters :model/Card :id (:id card)))))))))
+       (testing "update the dashboard parameter and remove values_config of card"
+         (is (=? [{:id   "param_1"
+                   :name "Param 1"
+                   :type :category}]
+                 (t2/select-one-fn :parameters :model/Card :id (:id card)))))))))
 
 (deftest descendants-test
   (testing "regular cards don't depend on anything"
@@ -633,11 +633,12 @@
                  :visualization_settings
                  (json/parse-string keyword)))))))
 
+
 ;;; -------------------------------------------- Revision tests  --------------------------------------------
 
 (deftest ^:parallel diff-cards-str-test
   (are [x y expected] (= expected
-                         (u/build-sentence (revision/diff-strings :model/Card x y)))
+                       (u/build-sentence (revision/diff-strings :model/Card x y)))
     {:name        "Diff Test"
      :description nil}
     {:name        "Diff Test Changed"
@@ -658,29 +659,30 @@
      :description "New description"}
     "added a description and renamed it from \"Diff Test\" to \"Diff Test changed\"."))
 
+
 (deftest diff-cards-str-update-collection--test
-  (t2.with-temp/with-temp
-    [Collection {coll-id-1 :id} {:name "Old collection"}
-     Collection {coll-id-2 :id} {:name "New collection"}]
-    (are [x y expected] (= expected
-                           (u/build-sentence (revision/diff-strings :model/Card x y)))
+ (t2.with-temp/with-temp
+     [Collection {coll-id-1 :id} {:name "Old collection"}
+      Collection {coll-id-2 :id} {:name "New collection"}]
+     (are [x y expected] (= expected
+                          (u/build-sentence (revision/diff-strings :model/Card x y)))
 
-      {:name "Apple"}
-      {:name          "Apple"
-       :collection_id coll-id-2}
-      "moved this Card to New collection."
+       {:name "Apple"}
+       {:name          "Apple"
+        :collection_id coll-id-2}
+       "moved this Card to New collection."
 
-      {:name        "Diff Test"
-       :description nil}
-      {:name        "Diff Test changed"
-       :description "New description"}
-      "added a description and renamed it from \"Diff Test\" to \"Diff Test changed\"."
+       {:name        "Diff Test"
+        :description nil}
+       {:name        "Diff Test changed"
+        :description "New description"}
+       "added a description and renamed it from \"Diff Test\" to \"Diff Test changed\"."
 
-      {:name          "Apple"
-       :collection_id coll-id-1}
-      {:name          "Apple"
-       :collection_id coll-id-2}
-      "moved this Card from Old collection to New collection.")))
+       {:name          "Apple"
+        :collection_id coll-id-1}
+       {:name          "Apple"
+        :collection_id coll-id-2}
+       "moved this Card from Old collection to New collection.")))
 
 (defn- create-card-revision!
   "Fetch the latest version of a Dashboard and save a revision entry for it. Returns the fetched Dashboard."
@@ -750,14 +752,14 @@
                          :made_public_by_id} col)
               (testing (format "we should have a revision description for %s" col)
                 (is (some? (u/build-sentence
-                           (revision/diff-strings
-                            Dashboard
-                            before
-                            changes)))))))))))
+                             (revision/diff-strings
+                               Dashboard
+                               before
+                               changes)))))))))))
 
  ;; test tracking result_metadata for models
  (let [card-info (mt/card-with-source-metadata-for-query
-                  (mt/mbql-query venues))]
+                   (mt/mbql-query venues))]
    (t2.with-temp/with-temp
      [:model/Card card card-info]
      (let [before  (select-keys card [:result_metadata])
@@ -770,10 +772,10 @@
 
        (testing "we should have a revision description for :result_metadata on model"
          (is (some? (u/build-sentence
-                     (revision/diff-strings
-                      Dashboard
-                      before
-                      changes)))))))))
+                      (revision/diff-strings
+                        Dashboard
+                        before
+                        changes)))))))))
 
 (deftest storing-metabase-version
   (testing "Newly created Card should know a Metabase version used to create it"
