@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 3
     outputs:
-      backend_all: ${{ steps.changes.outputs.backend_all }}
+      backend_all: 'true'
     steps:
       - uses: actions/checkout@v3
       - name: Test which files changed
