@@ -1174,7 +1174,7 @@
     ;; are allowed to be specified for it.
     [:widget-type WidgetType]
     ;; optional map to be appended to filter clause
-    [:options {:optional true} [:map-of :keyword :any]]]])
+    [:options {:optional true} [:maybe [:map-of :keyword :any]]]]])
 
 (def raw-value-template-tag-types
   "Set of valid values of `:type` for raw value template tags."
@@ -1556,6 +1556,7 @@
    ;; Like `:id` and `:category` above, `:date/all-options` is primarily a widget type. It means that we should allow
    ;; any date option above.
    :date/all-options {:type :date, :allowed-for #{:date/all-options}}
+   :date/exclude     {:type :date, :allowed-for #{:date/all-options}}
 
    ;; "operator" parameter types.
    :number/!=               {:type :numeric, :operator :variadic, :allowed-for #{:number/!=}}
