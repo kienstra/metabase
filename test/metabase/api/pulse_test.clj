@@ -1,6 +1,7 @@
 (ns metabase.api.pulse-test
   "Tests for /api/pulse endpoints."
   (:require
+   [clojure.string :as str]
    [clojure.test :refer :all]
    [java-time.api :as t]
    [metabase.api.card-test :as api.card-test]
@@ -1100,6 +1101,23 @@
                            [:trace    :any]
                            [:via      :any]]
                           body)))))))))
+
+(deftest preview-card-info-test
+  (testing "GET /api/pulse/preview_card_info/:id"
+    (mt/with-temp [Collection _    {}
+                   Pulse      {}   {:name "Calvus Auerilius" :creator_id (mt/user->id :crowberto)}
+                   Card       card {:dataset_query (mt/mbql-query checkins {:limit 5})}]
+      (testing "Should preview the card info"
+        (let [actual   (mt/user-http-request :rasta :get 200 (str "pulse/preview_card_info/" (u/the-id card)))
+              url-path (str "question/" (u/the-id card))]
+          (is (=?
+               {:id              (u/the-id card)
+                :pulse_card_type "table"}
+               actual))
+          (is (str/includes? (:pulse_card_url actual) url-path))
+          (is (str/includes? (:pulse_card_html actual) url-path))))
+      (testing "Should handle not found"
+        (is (= "Not found." (mt/user-http-request :rasta :get 404 (str "pulse/preview_card_info/" Integer/MAX_VALUE))))))))
 
 (deftest delete-subscription-test
   (testing "DELETE /api/pulse/:id/subscription"
