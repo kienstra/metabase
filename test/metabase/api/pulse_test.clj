@@ -1104,9 +1104,9 @@
 
 (deftest preview-card-info-test
   (testing "GET /api/pulse/preview_card_info/:id"
-    (mt/with-temp [Collection _ {}
-                   Pulse        {} {:name "Calvus Auerilius" :creator_id (mt/user->id :crowberto)}
-                   Card         card              {:dataset_query (mt/mbql-query checkins {:limit 5})}]
+    (mt/with-temp [Collection _    {}
+                   Pulse      {}   {:name "Calvus Auerilius" :creator_id (mt/user->id :crowberto)}
+                   Card       card {:dataset_query (mt/mbql-query checkins {:limit 5})}]
       (testing "Should preview the card info"
         (let [actual   (mt/user-http-request :rasta :get 200 (str "pulse/preview_card_info/" (u/the-id card)))
               url-path (str "question/" (u/the-id card))]
